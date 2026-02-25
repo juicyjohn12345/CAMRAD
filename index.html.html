@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMRAD Ltd | Coming Soon</title>
+
+    <link rel="icon" type="image/png" href="Logo/Camrad Logo-Favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background-color: #080808;
+            color: #ffffff;
+            font-family: 'DM Sans', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 40px 24px;
+            overflow: hidden;
+        }
+
+        /* CT scan background layer */
+        .ct-backdrop {
+            position: fixed;
+            top: 32%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 650px;
+            height: 650px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            animation: ctFadeIn 3s ease forwards 0.2s;
+        }
+
+        .ct-backdrop canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Bright orange glow behind logo — sits over the CT scan */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 32%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(
+                circle,
+                rgba(255, 140, 0, 0.45) 0%,
+                rgba(255, 90, 0, 0.2) 25%,
+                rgba(255, 60, 0, 0.06) 50%,
+                transparent 70%
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Secondary softer glow for depth */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 28%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(
+                circle,
+                rgba(255, 160, 20, 0.25) 0%,
+                transparent 60%
+            );
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(30px);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 44px;
+            max-width: 560px;
+            width: 100%;
+        }
+
+        .logo {
+            width: 300px;
+            max-width: 85vw;
+            height: auto;
+            opacity: 0;
+            animation: fadeUp 1.4s ease forwards 0.3s;
+            filter: drop-shadow(0 0 40px rgba(255, 120, 0, 0.4))
+                    drop-shadow(0 0 80px rgba(255, 100, 0, 0.15));
+        }
+
+        .divider {
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FF8C00, transparent);
+            opacity: 0;
+            animation: fadeUp 1.2s ease forwards 0.8s;
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            font-weight: 300;
+            color: #b0b0b0;
+            letter-spacing: 0.04em;
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeUp 1.2s ease forwards 1.1s;
+        }
+
+        .tagline em {
+            font-style: normal;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .contact {
+            opacity: 0;
+            animation: fadeUp 1.2s ease forwards 1.4s;
+        }
+
+        .contact p {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .contact a {
+            color: #FF8C00;
+            text-decoration: none;
+            font-size: 1.05rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .contact a:hover {
+            color: #FFB347;
+            border-bottom-color: rgba(255, 140, 0, 0.4);
+        }
+
+        .footer-legal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 24px;
+            font-size: 0.65rem;
+            color: #777;
+            letter-spacing: 0.05em;
+            text-align: center;
+            line-height: 1.9;
+            opacity: 0;
+            animation: fadeUp 1.2s ease forwards 2s;
+            border-top: 1px solid #1a1a1a;
+            background: #080808;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes ctFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Slow drift animation for the CT scan */
+        @keyframes slowRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                gap: 32px;
+            }
+            .logo {
+                width: 85vw;
+            }
+            .ct-backdrop {
+                width: 400px;
+                height: 400px;
+            }
+            .footer-legal {
+                font-size: 0.55rem;
+                padding: 16px 16px;
+                line-height: 1.7;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CT scan cross-section rendered via canvas -->
+    <div class="ct-backdrop">
+        <canvas id="ctCanvas"></canvas>
+    </div>
+
+    <div class="container">
+        <img class="logo" src="Logo/Camrad Logo_Website Logo.png" alt="CAMRAD Ltd">
+
+        <div class="divider"></div>
+
+        <p class="tagline">
+            Something <em>significant</em> is on its way.<br>
+            We are not quite ready to introduce ourselves — but we will be.
+        </p>
+
+        <div class="contact">
+            <p>In the meantime</p>
+            <a href="mailto:john@camrad.co.uk">info@camrad.co.uk</a>
+        </div>
+    </div>
+
+    <div class="footer-legal">
+        &copy; 2026 CAMRAD Ltd. All rights reserved. &nbsp;&bull;&nbsp; CAMRAD&trade; is a trademark of CAMRAD Ltd.<br>
+        Registered in England &amp; Wales &nbsp;&bull;&nbsp; Company No. 11725682 &nbsp;&bull;&nbsp; 24 Nicholas Street, Chester, CH1 2AU, United Kingdom
+    </div>
+
+    <script>
+        // Generate a stylised CT scan axial cross-section
+        const canvas = document.getElementById('ctCanvas');
+        const ctx = canvas.getContext('2d');
+        const size = 650;
+        canvas.width = size;
+        canvas.height = size;
+
+        const cx = size / 2;
+        const cy = size / 2;
+
+        // Helper: draw an ellipse with a radial gradient
+        function drawOrgan(x, y, rx, ry, rotation, color1, color2, alpha) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, Math.max(rx, ry));
+            grad.addColorStop(0, color1);
+            grad.addColorStop(1, color2);
+            ctx.fillStyle = grad;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Helper: draw concentric ring
+        function drawRing(x, y, radius, width, color, alpha) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Start with a fully transparent canvas
+        ctx.clearRect(0, 0, size, size);
+
+        // 1. Outer skull — large ellipse
+        drawOrgan(cx, cy, 260, 240, 0, 'rgba(255,120,0,0.12)', 'rgba(255,80,0,0.02)', 1);
+
+        // 2. Skull bone ring
+        drawRing(cx, cy, 250, 8, 'rgba(255,160,40,0.15)', 1);
+        drawRing(cx, cy, 242, 3, 'rgba(255,140,20,0.08)', 1);
+
+        // 3. Brain outer cortex — sulci pattern (irregular rings)
+        for (let i = 0; i < 14; i++) {
+            const angle = (Math.PI * 2 / 14) * i + Math.random() * 0.3;
+            const dist = 150 + Math.random() * 70;
+            const r = 30 + Math.random() * 40;
+            drawRing(
+                cx + Math.cos(angle) * dist * 0.5,
+                cy + Math.sin(angle) * dist * 0.45,
+                r,
+                1 + Math.random() * 1.5,
+                `rgba(255,${100 + Math.floor(Math.random()*60)},0,${0.06 + Math.random()*0.06})`,
+                1
+            );
+        }
+
+        // 4. Cerebral hemispheres — two large lobes
+        drawOrgan(cx - 60, cy - 10, 130, 160, -0.1, 'rgba(255,130,0,0.07)', 'rgba(255,100,0,0.01)', 1);
+        drawOrgan(cx + 60, cy - 10, 130, 160, 0.1, 'rgba(255,130,0,0.07)', 'rgba(255,100,0,0.01)', 1);
+
+        // 5. Interhemispheric fissure (vertical line down the middle)
+        ctx.save();
+        ctx.globalAlpha = 0.12;
+        ctx.strokeStyle = 'rgba(255,140,0,0.3)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 200);
+        ctx.lineTo(cx, cy + 120);
+        ctx.stroke();
+        ctx.restore();
+
+        // 6. Lateral ventricles — butterfly/boomerang shapes
+        ctx.save();
+        ctx.globalAlpha = 0.15;
+        ctx.fillStyle = 'rgba(255,170,30,0.25)';
+        // Left ventricle
+        ctx.beginPath();
+        ctx.moveTo(cx - 10, cy - 30);
+        ctx.quadraticCurveTo(cx - 60, cy - 70, cx - 90, cy - 20);
+        ctx.quadraticCurveTo(cx - 100, cy + 10, cx - 70, cy + 20);
+        ctx.quadraticCurveTo(cx - 30, cy + 10, cx - 10, cy - 30);
+        ctx.fill();
+        // Right ventricle
+        ctx.beginPath();
+        ctx.moveTo(cx + 10, cy - 30);
+        ctx.quadraticCurveTo(cx + 60, cy - 70, cx + 90, cy - 20);
+        ctx.quadraticCurveTo(cx + 100, cy + 10, cx + 70, cy + 20);
+        ctx.quadraticCurveTo(cx + 30, cy + 10, cx + 10, cy - 30);
+        ctx.fill();
+        ctx.restore();
+
+        // 7. Third ventricle (small midline)
+        drawOrgan(cx, cy - 5, 6, 18, 0, 'rgba(255,180,40,0.2)', 'rgba(255,140,0,0.05)', 1);
+
+        // 8. Thalamus — paired oval structures
+        drawOrgan(cx - 30, cy + 5, 28, 22, 0.2, 'rgba(255,140,0,0.09)', 'rgba(255,100,0,0.02)', 1);
+        drawOrgan(cx + 30, cy + 5, 28, 22, -0.2, 'rgba(255,140,0,0.09)', 'rgba(255,100,0,0.02)', 1);
+
+        // 9. Internal capsule — subtle V shapes
+        ctx.save();
+        ctx.globalAlpha = 0.08;
+        ctx.strokeStyle = 'rgba(255,160,40,0.4)';
+        ctx.lineWidth = 2;
+        // Left
+        ctx.beginPath();
+        ctx.moveTo(cx - 55, cy - 40);
+        ctx.lineTo(cx - 30, cy + 10);
+        ctx.lineTo(cx - 55, cy + 50);
+        ctx.stroke();
+        // Right
+        ctx.beginPath();
+        ctx.moveTo(cx + 55, cy - 40);
+        ctx.lineTo(cx + 30, cy + 10);
+        ctx.lineTo(cx + 55, cy + 50);
+        ctx.stroke();
+        ctx.restore();
+
+        // 10. Frontal sinuses (top, subtle)
+        drawOrgan(cx - 20, cy - 210, 18, 10, 0.3, 'rgba(255,120,0,0.1)', 'transparent', 1);
+        drawOrgan(cx + 20, cy - 210, 18, 10, -0.3, 'rgba(255,120,0,0.1)', 'transparent', 1);
+
+        // 11. Eyes / orbits
+        drawOrgan(cx - 80, cy - 190, 28, 20, 0, 'rgba(255,150,0,0.08)', 'transparent', 1);
+        drawOrgan(cx + 80, cy - 190, 28, 20, 0, 'rgba(255,150,0,0.08)', 'transparent', 1);
+        drawRing(cx - 80, cy - 190, 14, 1.5, 'rgba(255,170,40,0.12)', 1);
+        drawRing(cx + 80, cy - 190, 14, 1.5, 'rgba(255,170,40,0.12)', 1);
+
+        // 12. Cerebellum (posterior fossa)
+        drawOrgan(cx, cy + 160, 80, 50, 0, 'rgba(255,120,0,0.08)', 'rgba(255,80,0,0.01)', 1);
+        // Cerebellar folia — fine horizontal lines
+        ctx.save();
+        ctx.globalAlpha = 0.06;
+        ctx.strokeStyle = 'rgba(255,150,40,0.3)';
+        ctx.lineWidth = 0.8;
+        for (let i = -3; i <= 3; i++) {
+            ctx.beginPath();
+            ctx.moveTo(cx - 60, cy + 150 + i * 8);
+            ctx.quadraticCurveTo(cx, cy + 145 + i * 8 + (i % 2 === 0 ? -4 : 4), cx + 60, cy + 150 + i * 8);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // 13. Brainstem
+        drawOrgan(cx, cy + 100, 18, 35, 0, 'rgba(255,130,0,0.1)', 'rgba(255,100,0,0.02)', 1);
+
+        // 14. Subtle noise texture overlay for medical feel
+        ctx.save();
+        ctx.globalAlpha = 0.03;
+        for (let i = 0; i < 8000; i++) {
+            const nx = Math.random() * size;
+            const ny = Math.random() * size;
+            const distFromCenter = Math.sqrt((nx - cx) ** 2 + (ny - cy) ** 2);
+            if (distFromCenter < 260) {
+                const brightness = Math.floor(200 + Math.random() * 55);
+                ctx.fillStyle = `rgba(${brightness},${Math.floor(brightness*0.6)},0,1)`;
+                ctx.fillRect(nx, ny, 1, 1);
+            }
+        }
+        ctx.restore();
+
+        // 15. Radial fade — mask edges to black so it bleeds into background
+        const fadeGrad = ctx.createRadialGradient(cx, cy, 150, cx, cy, 320);
+        fadeGrad.addColorStop(0, 'rgba(8,8,8,0)');
+        fadeGrad.addColorStop(1, 'rgba(8,8,8,1)');
+        ctx.fillStyle = fadeGrad;
+        ctx.fillRect(0, 0, size, size);
+    </script>
+
+</body>
+</html>

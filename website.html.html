@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMRAD Ltd | Teleradiology Services</title>
+    
+    <link rel="icon" type="image/png" href="Logo/Camrad Logo-Favicon.png">
+    <link rel="preload" as="image" href="images/slide1.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Color Palette & Variables --- */
+        :root {
+            --dark-orange: #D35400; 
+            --orange: #E67E22;      
+            --light-orange: #FDE8D8;
+            --warm-yellow: #FFF2CC; 
+            --text-dark: #333333;   
+            --bg-white: #FFFFFF;    
+            --bg-light-gray: #f4f6f8; 
+
+            --font-serif: 'DM Sans', system-ui, sans-serif;
+            --font-sans: 'DM Sans', system-ui, sans-serif;
+        }
+
+        /* --- Basic Reset --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            line-height: 1.7;
+            font-family: var(--font-serif); 
+            font-size: 1.05rem; 
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--dark-orange);
+            margin-bottom: 15px;
+            font-weight: 700; 
+        }
+
+        /* --- Top Utility Bar --- */
+        .top-bar {
+            background-color: var(--dark-orange);
+            color: var(--bg-white);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            padding: 8px 5%;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 5%;
+            background-color: var(--bg-white);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            font-family: var(--font-sans);
+        }
+        .logo img {
+            max-height: 120px;
+            width: auto;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            padding-bottom: 5px;
+        }
+        .nav-links a:hover {
+            color: var(--orange);
+            border-bottom: 2px solid var(--orange);
+        }
+
+        /* --- Hero Banner --- */
+        #home {
+            background-color: var(--text-dark);
+            padding: 120px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--orange);
+            gap: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+        .hero-content {
+            max-width: 520px;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+        .hero-content h1 {
+            color: var(--bg-white);
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .hero-content p {
+            font-family: var(--font-sans);
+            color: var(--bg-white);
+            margin-bottom: 30px;
+            font-size: 1.15rem;
+            opacity: 0.95;
+        }
+
+        /* --- Hero Slideshow --- */
+        .hero-slideshow {
+            position: relative;
+            flex: 1;
+            height: 440px;
+            min-width: 0;
+            z-index: 1;
+            /* 4-sided fade: left bleeds heavily into hero text, top/bottom/right softer */
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%, black 88%, transparent 100%),
+                                linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+            -webkit-mask-composite: source-in;
+            mask-image: linear-gradient(to right, transparent 0%, black 30%, black 88%, transparent 100%),
+                        linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+            mask-composite: intersect;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        .slideshow-ready .slide {
+            transition: opacity 3s ease-in-out;
+        }
+        /* Caption overlay on each slide */
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px 30px 28px;
+            background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+            color: #fff;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .slide-caption span {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--orange);
+            margin-bottom: 6px;
+        }
+        .slide-caption h4 {
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.35;
+        }
+        .slide-caption .read-more {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.75);
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.35);
+            padding-bottom: 1px;
+            transition: color 0.2s;
+        }
+        .slide:hover .read-more {
+            color: #fff;
+        }
+        /* Dots navigation */
+        .slide-dots {
+            position: absolute;
+            bottom: 14px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+        .slide-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.3s;
+        }
+        .slide-dot.active {
+            background: rgba(255,255,255,0.9);
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-block;
+            background-color: var(--dark-orange);
+            color: var(--bg-white);
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 4px; 
+            font-weight: 600;
+            font-size: 1rem;
+            font-family: var(--font-sans);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: var(--orange);
+        }
+        .btn-outline {
+            background-color: transparent;
+            color: var(--bg-white);
+            border: 2px solid var(--bg-white);
+        }
+        .btn-outline:hover {
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+        }
+
+        /* --- Standard Section Formatting --- */
+        section {
+            padding: 80px 5%;
+        }
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 50px auto;
+        }
+        .section-header h2 {
+            font-size: 2.2rem;
+        }
+        .section-header p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* --- Cards Container (Reusable) --- */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: var(--bg-white);
+            padding: 40px 30px;
+            border-radius: 8px;
+            border-top: 4px solid var(--orange);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .card h3 {
+            color: var(--dark-orange);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        /* --- Background Colors for Alternating Sections --- */
+        .bg-light { background-color: var(--bg-light-gray); }
+        .bg-white { background-color: var(--bg-white); }
+        .bg-yellow { background-color: var(--warm-yellow); }
+
+        /* --- Statistics Banner --- */
+        .stats-banner {
+            background-color: var(--dark-orange);
+            color: var(--bg-white);
+            padding: 60px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+            font-family: var(--font-sans);
+        }
+        .stat-item h3 {
+            color: var(--bg-white);
+            font-size: 3rem;
+            margin-bottom: 5px;
+        }
+        .stat-item p {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* --- Contact Section --- */
+        .contact-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: var(--bg-white);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--dark-orange);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            font-family: var(--font-sans);
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: var(--light-orange); 
+            font-size: 1rem;
+            font-family: var(--font-sans);
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--dark-orange);
+            box-shadow: 0 0 0 2px rgba(211, 84, 0, 0.2); 
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: var(--text-dark);
+            color: var(--bg-white);
+            padding: 60px 5% 30px 5%;
+            font-family: var(--font-sans);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-bottom: 1px solid #555;
+            padding-bottom: 40px;
+        }
+        .footer-col h4 {
+            color: var(--orange);
+            margin-bottom: 20px;
+        }
+        .footer-col ul {
+            list-style: none;
+        }
+        .footer-col ul li {
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+        .footer-col a {
+            color: var(--bg-white);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-col a:hover {
+            color: var(--orange);
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* --- Tagline (mobile only, hidden on desktop) --- */
+        .nav-tagline {
+            display: none;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+
+            /* Hide top bar, show tagline instead */
+            .top-bar { display: none; }
+            .nav-tagline {
+                display: block;
+                font-size: 0.78rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--dark-orange);
+                margin-top: 2px;
+            }
+
+            /* Nav */
+            nav { flex-direction: column; gap: 8px; padding: 14px 5%; }
+            .nav-logo-wrap { display: flex; flex-direction: column; align-items: center; }
+            .logo img { max-height: 70px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 14px; }
+            .nav-links a { font-size: 0.9rem; }
+
+            /* Hero — stack vertically, slideshow below text */
+            #home {
+                flex-direction: column;
+                padding: 50px 5% 0;
+                gap: 0;
+            }
+            .hero-content {
+                max-width: 100%;
+                padding-bottom: 36px;
+            }
+            .hero-content h1 { font-size: 1.9rem; }
+            .hero-content p { font-size: 1rem; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; }
+
+            /* Slideshow stacks full-width below the text */
+            .hero-slideshow {
+                width: 100%;
+                height: 260px;
+                flex: none;
+                /* Simplify mask on mobile — just top/bottom fade */
+                -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+                mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+                -webkit-mask-composite: unset;
+                mask-composite: unset;
+            }
+
+            /* Cards */
+            .cards-container { grid-template-columns: 1fr; }
+
+            /* Stats banner */
+            .stats-banner { grid-template-columns: repeat(2, 1fr); padding: 40px 5%; }
+            .stat-item h3 { font-size: 2.2rem; }
+
+            /* Sections */
+            section { padding: 50px 5%; }
+            .section-header h2 { font-size: 1.7rem; }
+
+            /* Contact form */
+            .contact-container { padding: 28px 20px; }
+
+            /* Footer */
+            .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        UK GMC-Registered Radiologists &nbsp;|&nbsp; 72hr Turnaround &nbsp;|&nbsp; <a href="mailto:john@camrad.co.uk" style="color: inherit; text-decoration: underline;">info@camrad.co.uk</a>
+    </div>
+
+    <nav>
+        <div class="nav-logo-wrap">
+            <a href="#home" class="logo">
+                <img src="Logo/Camrad Logo_Website Logo.png" alt="Camrad Teleradiology Logo">
+            </a>
+            <span class="nav-tagline">Radiology Reporting, Done Right.</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section id="home">
+        <div class="hero-content">
+            <h1>Quality Radiology Reporting When You Need It Most</h1>
+            <p>Physician-led teleradiology services delivering MRI, CT, and plain film reports to NHS trusts across Northwest England. Rapid turnaround. Clinical excellence. Transparent pricing.</p>
+            <div class="btn-group">
+                <a href="#contact" class="btn">Get in Touch</a>
+                <a href="#services" class="btn btn-outline">View Our Services</a>
+            </div>
+        </div>
+        <div class="hero-slideshow">
+            <a class="slide" href="articles/mri-reporting-nhs.html" style="background-image: url('images/slide1.jpg');">
+                <div class="slide-caption">
+                    <span>Clinical Insight</span>
+                    <h4>How Teleradiology Is Easing MRI Reporting Backlogs Across the NHS</h4>
+                    <span class="read-more">Read article →</span>
+                </div>
+            </a>
+            <a class="slide" href="articles/radiologist-wellbeing.html" style="background-image: url('images/slide2.jpg');">
+                <div class="slide-caption">
+                    <span>Our Approach</span>
+                    <h4>Why Radiologist Wellbeing Leads to Better Patient Outcomes</h4>
+                    <span class="read-more">Read article →</span>
+                </div>
+            </a>
+            <a class="slide" href="articles/cheshire-mersey-radiology.html" style="background-image: url('images/slide3.jpg');">
+                <div class="slide-caption">
+                    <span>Regional Focus</span>
+                    <h4>Supporting Cheshire & Mersey NHS Trusts With Rapid, Reliable Reporting</h4>
+                    <span class="read-more">Read article →</span>
+                </div>
+            </a>
+            <a class="slide" href="articles/quality-standards.html" style="background-image: url('images/slide4.jpg');">
+                <div class="slide-caption">
+                    <span>Quality & Compliance</span>
+                    <h4>The Standards Behind Every CAMRAD Report: Peer Review & RCR Guidelines</h4>
+                    <span class="read-more">Read article →</span>
+                </div>
+            </a>
+            <div class="slide-dots">
+                <button class="slide-dot" data-index="0"></button>
+                <button class="slide-dot" data-index="1"></button>
+                <button class="slide-dot" data-index="2"></button>
+                <button class="slide-dot" data-index="3"></button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.slide-dot');
+        let current = 0;
+        let timer;
+
+        function goToSlide(index) {
+            slides[current].classList.remove('active');
+            dots[current].classList.remove('active');
+            current = index;
+            slides[current].classList.add('active');
+            dots[current].classList.add('active');
+        }
+
+        function nextSlide() {
+            goToSlide((current + 1) % slides.length);
+        }
+
+        function startTimer() {
+            timer = setInterval(nextSlide, 10000);
+        }
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                clearInterval(timer);
+                goToSlide(parseInt(dot.dataset.index));
+                startTimer();
+            });
+        });
+
+        // Show first slide immediately (local image), then enable transitions shortly after
+        slides[0].classList.add('active');
+        dots[0].classList.add('active');
+        setTimeout(() => {
+            document.querySelector('.hero-slideshow').classList.add('slideshow-ready');
+        }, 200);
+
+        startTimer();
+    </script>
+
+    <section id="difference" class="bg-light">
+        <div class="section-header">
+            <h2>The CAMRAD Difference</h2>
+            <p>Why NHS Trusts Choose CAMRAD for Reliable Reporting</p>
+        </div>
+        <div class="cards-container">
+            <div class="card">
+                <h3>Founded by Radiologists</h3>
+                <p>CAMRAD is led by consultant radiologists with decades of NHS experience. We understand the pressures you face because we've lived them. Our service is built on clinical quality, not just commercial efficiency.</p>
+            </div>
+            <div class="card">
+                <h3>Regional Focus</h3>
+                <p>We specialize in Cheshire & Mersey, which means you get dedicated account management, rapid on-site support when needed, and a team that understands your local challenges.</p>
+            </div>
+            <div class="card">
+                <h3>Quality You Can Trust</h3>
+                <ul style="margin-left: 20px; font-family: var(--font-sans); margin-top: 10px;">
+                    <li>5% peer review of all reports</li>
+                    <li>All UK GMC-registered consultants</li>
+                    <li>Structured reporting templates</li>
+                    <li>ISO27001-aligned security</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div class="stats-banner">
+        <div class="stat-item">
+            <h3>5%</h3>
+            <p>Peer Review Rate</p>
+        </div>
+        <div class="stat-item">
+            <h3>72 hrs</h3>
+            <p>Standard Turnaround</p>
+        </div>
+        <div class="stat-item">
+            <h3>100%</h3>
+            <p>UK GMC-Registered</p>
+        </div>
+        <div class="stat-item">
+            <h3>24/7</h3>
+            <p>Technical Support</p>
+        </div>
+    </div>
+
+    <section id="services" class="bg-white">
+        <div class="section-header">
+            <h2>Our Teleradiology Services</h2>
+            <p>High-quality remote radiology reporting across all major imaging modalities</p>
+        </div>
+        
+        <div class="cards-container" style="max-width: 900px;">
+            <div class="card bg-yellow">
+                <h3>Routine Reporting Service</h3>
+                <p><strong>72-hour turnaround for outpatient and elective imaging.</strong> Includes structured format following RCR guidelines, comparison with prior imaging, and clear clinical recommendations.</p>
+                <br>
+                <ul style="margin-left: 20px;">
+                    <li><strong>MRI all body parts</strong></li>
+                    <li><strong>CT all regions</strong></li>
+                    <li><strong>Plain films</strong></li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Backlog Clearance Programme</h3>
+                <p><strong>7-day turnaround for waiting list initiatives.</strong> We provide high-volume capacity with dedicated radiologist teams and custom pricing for large-scale projects.</p>
+                <br>
+                <p><em>Seamless integration with your existing systems, including PACS connectivity via VPN, RIS integration, and HL7 messaging support.</em></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="bg-light">
+        <div class="section-header">
+            <h2>About CAMRAD</h2>
+            <p>UK based and Physician led teleradiology built on clinical excellence and radiologist satisfaction.</p>
+        </div>
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <p style="margin-bottom: 20px;">CAMRAD Ltd was founded by consultant radiologists with extensive NHS experience in Northwest England. Having worked in busy radiology departments across Cheshire and Mersey, we've experienced firsthand the workforce pressures facing modern radiology services.</p>
+            <p style="margin-bottom: 48px;">We saw an opportunity to create something different: a teleradiology provider that genuinely prioritizes clinical quality and radiologist wellbeing. We pay our reporting radiologists approximately 57% of revenue — significantly above the industry standard. Happy, fairly compensated radiologists produce better reports.</p>
+
+            <h3 style="margin-bottom: 24px;">Regulatory & Compliance</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px 30px; text-align: left;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="color: var(--dark-orange); font-weight: 700; flex-shrink: 0;">✓</span>
+                    <span>CQC Registered (Registration in progress — Q3 2026)</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="color: var(--dark-orange); font-weight: 700; flex-shrink: 0;">✓</span>
+                    <span>Cyber Essentials Certified (Q2 2026)</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="color: var(--dark-orange); font-weight: 700; flex-shrink: 0;">✓</span>
+                    <span>ISO27001 Implementation Underway (Q1 2027)</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="color: var(--dark-orange); font-weight: 700; flex-shrink: 0;">✓</span>
+                    <span>NHS Digital Data Security & Protection Toolkit</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="color: var(--dark-orange); font-weight: 700; flex-shrink: 0;">✓</span>
+                    <span>GDPR Compliant with Data Processing Agreements</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="color: var(--dark-orange); font-weight: 700; flex-shrink: 0;">✓</span>
+                    <span>Professional Indemnity Insurance: £10M</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="bg-white">
+        <div class="section-header">
+            <h2>Contact CAMRAD</h2>
+            <p>Get in touch to discuss how we can support your radiology department or to learn about joining our team.</p>
+        </div>
+        
+        <div class="contact-container">
+            <form action="mailto:john@camrad.co.uk" method="POST" enctype="text/plain">
+                <div>
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="Name" required>
+                </div>
+
+                <div>
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="Email" required>
+                </div>
+                
+                <div>
+                    <label for="org">Organisation / NHS Trust</label>
+                    <input type="text" id="org" name="Organisation">
+                </div>
+
+                <div>
+                    <label for="subject">Subject *</label>
+                    <select id="subject" name="Subject" required>
+                        <option value="">Select an option...</option>
+                        <option value="General Enquiry">General Enquiry</option>
+                        <option value="Request Quote">Request a Quote</option>
+                        <option value="Technical Question">Technical Question</option>
+                        <option value="Join Our Team">Join Our Team</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="Message" rows="5" required></textarea>
+                </div>
+
+                <button type="submit" class="btn">Open Email to Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>CAMRAD Ltd</h4>
+                <p style="color:#ccc; font-size:0.9rem;">Quality radiology reporting, delivered.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li><a href="mailto:john@camrad.co.uk">info@camrad.co.uk</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <p style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #aaa; margin-bottom: 8px;">Registered Address</p>
+                <p style="color:#ccc; font-size:0.9rem; margin-bottom: 16px;">24 Nicholas Street<br>Chester, CH1 2AU<br>United Kingdom</p>
+                <p style="color:#ccc; font-size:0.9rem;">Registered in England and Wales<br>Company Number: 11725682</p>
+            </div>
+        </div>
+        <div style="text-align: center; padding: 32px 0 16px;">
+            <img src="Logo/Camrad Logo_Website Logo.png" alt="CAMRAD Ltd" style="max-height: 55px; width: auto; opacity: 0.9;">
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 CAMRAD Ltd. All rights reserved. | <a href="#" style="color:var(--dark-orange);">Privacy Policy</a> | <a href="#" style="color:var(--dark-orange);">Terms of Service</a></p>
+        </div>
+    </footer>
+
+</body>
+</html>
